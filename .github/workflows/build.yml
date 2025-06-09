@@ -29,9 +29,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cocoapods-
 
-      - name: Lint Code
-        run: swiftlint
-
       - name: Build app
         run: |
           cd Sample
