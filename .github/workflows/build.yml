@@ -12,7 +12,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        xcode: [14.3, 15.0] # Add more versions as needed
+        xcode: [16.2] # Add more versions as needed
 
     steps:
       - name: Checkout code
