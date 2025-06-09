@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-latest]
 
     steps:
       - name: Checkout code
@@ -44,9 +44,3 @@ jobs:
           xcodebuild test \
           -scheme Sample \
           -destination 'platform=macOS'
-
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: Build-Results
-          path: build/
