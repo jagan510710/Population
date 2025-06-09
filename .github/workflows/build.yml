@@ -1,22 +1,52 @@
-name:  Build
+name: Build and Test Workflow
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
-    types: [ opened, synchronize, reopened ]
+    types: [opened, synchronize, reopened]
+
 jobs:
   build:
-    name: Build App   
-    runs-on: macos-latest
+    name: Build and Test App
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-            fetch-depth: 2
-            
+          fetch-depth: 2
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cocoapods
+          key: ${{ runner.os }}-cocoapods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cocoapods-
+
+      - name: Lint Code
+        run: swiftlint
+
       - name: Build app
         run: |
-            cd Sample
-            xcodebuild build \
-            -scheme Sample \
-            -destination 'platform=macOS'
-          
+          cd Sample
+          xcodebuild build \
+          -scheme Sample \
+          -destination 'platform=macOS'
+
+      - name: Run Unit Tests
+        run: |
+          xcodebuild test \
+          -scheme Sample \
+          -destination 'platform=macOS'
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Build-Results
+          path: build/
