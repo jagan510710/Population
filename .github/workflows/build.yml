@@ -15,6 +15,7 @@ jobs:
             
       - name: Build app
         run: |
+            cd Sample
             xcodebuild build \
             -scheme Sample \
             -destination 'platform=macOS'
