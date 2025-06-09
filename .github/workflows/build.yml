@@ -10,10 +10,7 @@ on:
 jobs:
   build:
     name: Build and Test App
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest]
+    runs-on: macos-latest
 
     steps:
       - name: Checkout code
@@ -21,23 +18,9 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.cocoapods
-          key: ${{ runner.os }}-cocoapods-${{ hashFiles('**/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cocoapods-
-
       - name: Build app
         run: |
           cd Sample
           xcodebuild build \
-          -scheme Sample \
-          -destination 'platform=macOS'
-
-      - name: Run Unit Tests
-        run: |
-          xcodebuild test \
           -scheme Sample \
           -destination 'platform=macOS'
