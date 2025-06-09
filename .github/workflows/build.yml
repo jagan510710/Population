@@ -1,4 +1,4 @@
-name: PR Build
+name:  Build
 
 on:
   pull_request:
@@ -16,6 +16,6 @@ jobs:
       - name: Build app
         run: |
             xcodebuild build \
-            -scheme Population \
+            -scheme Sample \
             -destination 'platform=macOS'
           
