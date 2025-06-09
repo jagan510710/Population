@@ -1,0 +1,21 @@
+name: PR Build
+
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+jobs:
+  build:
+    name: Build App   
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+            fetch-depth: 2
+            
+      - name: Build app
+        run: |
+            xcodebuild build \
+            -scheme Population \
+            -destination 'platform=macOS'
+          
