@@ -34,9 +34,9 @@ jobs:
           mkdir -p coverage
           cp -R ~/Library/Developer/Xcode/DerivedData/*/Logs/Test/*.xcresult coverage/
 
-      - name: Download xccov-to-lcov
+      - name: Download xccov-to-lcov (alternative fork)
         run: |
-          curl -L -o /usr/local/bin/xccov-to-lcov https://raw.githubusercontent.com/novemberfiveco/xccov-to-lcov/master/xccov-to-lcov
+          curl -L -o /usr/local/bin/xccov-to-lcov https://raw.githubusercontent.com/DreaminginCodeZH/xccov-to-lcov/master/xccov-to-lcov
           chmod +x /usr/local/bin/xccov-to-lcov
 
       - name: Verify xccov-to-lcov download
