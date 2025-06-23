@@ -34,8 +34,10 @@ jobs:
           mkdir -p coverage
           cp -R ~/Library/Developer/Xcode/DerivedData/*/Logs/Test/*.xcresult coverage/
 
-      - name: Install xccov-to-lcov
-        run: brew install xccov-to-lcov
+      - name: Download xccov-to-lcov
+        run: |
+          curl -L -o /usr/local/bin/xccov-to-lcov https://raw.githubusercontent.com/novemberfiveco/xccov-to-lcov/master/xccov-to-lcov
+          chmod +x /usr/local/bin/xccov-to-lcov
 
       - name: Convert Coverage to lcov
         run: |
