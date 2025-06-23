@@ -1,18 +1,15 @@
-name: Build and Test Workflow
+name: Build, Test, and Coverage
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
-  build:
-    name: Build and Test App
+  build-test:
+    name: Build, Test, and Report Coverage
     runs-on: macos-latest
-    strategy:
-      matrix:
-        xcode: [16.2] # Add more versions as needed
 
     steps:
       - name: Checkout code
@@ -20,11 +17,37 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Set Xcode version
-        run: sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode }}.app
+      - name: Set up latest Xcode
+        run: |
+          sudo xcode-select -s /Applications/Xcode.app
+          xcodebuild -version
 
-      - name: Build app
+      - name: Build and run tests with coverage
         run: |
           set -e
           cd Sample
-          xcodebuild build -scheme Sample -destination 'platform=macOS'
+          xcodebuild test \
+            -scheme Sample \
+            -destination 'platform=macOS' \
+            -enableCodeCoverage YES
+          mkdir -p coverage
+          cp -R ~/Library/Developer/Xcode/DerivedData/*/Logs/Test/*.xcresult coverage/
+
+      - name: Convert coverage to lcov
+        run: |
+          brew install slather
+          slather coverage --scheme Sample --output-directory coverage --input-format profdata .
+        working-directory: Sample
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: Sample/coverage
+
+      - name: Post coverage as PR comment
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          lcov-file: Sample/coverage/lcov.info
+        if: github.event_name == 'pull_request'
