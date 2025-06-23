@@ -63,8 +63,8 @@ jobs:
       - name: Show and save Xcode coverage summary
         run: |
           cd Sample
-          XCRESULT=$(ls -td DerivedData/Logs/Test/*.xcresult | head -n1)
-          xcrun xccov view --report "$XCRESULT" > coverage.txt
+          XCRESULT=$(ls -td ../DerivedData/Logs/Test/*.xcresult | head -n1)
+          xcrun xccov view --report "$XCRESULT"
           cat coverage.txt
       - name: Post coverage summary as PR comment
         uses: actions/github-script@v7
