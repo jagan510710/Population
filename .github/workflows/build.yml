@@ -62,6 +62,7 @@ jobs:
         run: sudo xcode-select -s /Applications/Xcode_16.2.app
       - name: Show and save Xcode coverage summary
         run: |
+          cd Sample
           XCRESULT=$(ls -td DerivedData/Logs/Test/*.xcresult | head -n1)
           xcrun xccov view --report "$XCRESULT" > coverage.txt
           cat coverage.txt
