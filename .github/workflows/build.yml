@@ -6,6 +6,11 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
 jobs:
   build-test:
     name: Build, Test, and Report Coverage
@@ -33,14 +38,11 @@ jobs:
             -enableCodeCoverage YES
           mkdir -p coverage
           cp -R ~/Library/Developer/Xcode/DerivedData/*/Logs/Test/*.xcresult coverage/
-
-      
       - name: Show and save Xcode coverage summary
         run: |
           XCRESULT=$(ls -td ~/Library/Developer/Xcode/DerivedData/*/Logs/Test/*.xcresult | head -n1)
           xcrun xccov view --report "$XCRESULT" > coverage.txt
           cat coverage.txt
-
       - name: Post coverage summary as PR comment
         uses: actions/github-script@v7
         if: github.event_name == 'pull_request'
@@ -48,9 +50,13 @@ jobs:
           script: |
             const fs = require('fs');
             const coverage = fs.readFileSync('coverage.txt', 'utf8');
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `## Xcode Coverage Summary\n\n\`\`\`\n${coverage}\n\`\`\``
-            });
+            try {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `## Xcode Coverage Summary\n\n\`\`\`\n${coverage}\n\`\`\``
+              });
+            } catch (e) {
+              core.warning(`Failed to post coverage comment: ${e.message}`);
+            }
