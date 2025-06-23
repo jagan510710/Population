@@ -34,21 +34,24 @@ jobs:
           mkdir -p coverage
           cp -R ~/Library/Developer/Xcode/DerivedData/*/Logs/Test/*.xcresult coverage/
 
-      - name: Convert coverage to lcov
+      - name: Install xccov-to-lcov
+        run: brew install xccov-to-lcov
+
+      - name: Convert Coverage to lcov
         run: |
-          brew install slather
-          slather coverage --scheme Sample --output-directory coverage --input-format profdata .
-        working-directory: Sample
+          cd Sample
+          XCRESULT=$(ls -td ~/Library/Developer/Xcode/DerivedData/*/Logs/Test/*.xcresult | head -n1)
+          xccov-to-lcov --xcresult $XCRESULT > coverage.lcov
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
         with:
           name: coverage
-          path: Sample/coverage
+          path: Sample/coverage.lcov
 
-      - name: Post coverage as PR comment
+      - name: Post coverage to PR
         uses: romeovs/lcov-reporter-action@v0.3.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          lcov-file: Sample/coverage/lcov.info
+          lcov-file: Sample/coverage.lcov
         if: github.event_name == 'pull_request'
