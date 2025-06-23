@@ -79,8 +79,5 @@ jobs:
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: `## Xcode Coverage Summary\n\n\`\`\`\n${coverage}\n\`\`\``
-              });
-            } catch (e) {
-              core.warning(`Failed to post coverage comment: ${e.message}`);
-            }
+                body: `## Xcode Coverage Summary`
+
